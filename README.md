@@ -31,4 +31,11 @@
            'PORT': '5432',
        }
    }
+5. Создание моделей и миграций:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+   
+
    
