@@ -36,6 +36,13 @@
    python manage.py makemigrations
    python manage.py migrate
    ```
-   
+6. Создайте суперпользователя:
+    ```bash
+    python manage.py createsuperuser
+    ``` 
+7. Запуск сервера:
+    ```bash
+    python manage.py runserver
+    ```
 
    
