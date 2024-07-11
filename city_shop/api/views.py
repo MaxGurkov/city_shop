@@ -4,9 +4,8 @@ from .models import City, Street, Shop
 from .serializers import CitySerializer, StreetSerializer, ShopSerializer
 from django.utils import timezone
 from django.shortcuts import render
-from django.db.models import Q  # Импортируем Q для построения запросов
-
-# Базовый класс с общим методом list
+from django.db.models import Q  
+#
 class BaseViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         try:
@@ -16,13 +15,36 @@ class BaseViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class CityViewSet(BaseViewSet):
+class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
 
-class StreetViewSet(BaseViewSet):
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            city_name = request.query_params.get('name', None)
+            if city_name:
+                queryset = queryset.filter(name__icontains=city_name)  # Фильтрация по имени города
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class StreetViewSet(viewsets.ModelViewSet):
     queryset = Street.objects.all()
     serializer_class = StreetSerializer
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            city_name = request.query_params.get('city', None)
+            if city_name:
+                queryset = queryset.filter(city__name=city_name)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ShopViewSet(viewsets.ModelViewSet):
     queryset = Shop.objects.all()
